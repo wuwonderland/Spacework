@@ -4,120 +4,139 @@ import os
 import time
 import random
 from pathlib import Path
-from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 API_KEY = os.environ.get('OPENAI_API_KEY')
-MODEL = os.environ.get('REVIEWER_MODEL', 'gpt-5.6-sol')
+PRIMARY_MODEL = os.environ.get('REVIEWER_MODEL', 'gpt-5.6-luna')
+ESCALATION_MODEL = os.environ.get('ESCALATION_MODEL', 'gpt-5.6-sol')
+MAX_RETRIES = 5
+
 if not API_KEY:
     raise SystemExit('OPENAI_API_KEY is required')
 
-# Keep the reviewer request intentionally compact. The reviewer should inspect
-# the most decision-relevant artifacts, not receive the entire repository.
 paths = [
     Path('reports/five-market-comparison-2026-08-21.md'),
     Path('calculations/five-market-calculations.md'),
     Path('claims/five-market-claims.md'),
     Path('verification/external-review.md'),
 ]
+
+MAX_FILE_CHARS = 45_000
+MAX_TOTAL_CHARS = 120_000
 parts = []
-TOTAL_BUDGET = 70_000
-remaining = TOTAL_BUDGET
+total = 0
 for p in paths:
+    if not p.exists():
+        continue
+    data = p.read_text(errors='replace')
+    if len(data) > MAX_FILE_CHARS:
+        data = data[:MAX_FILE_CHARS] + '\n[TRUNCATED FOR REVIEW]\n'
+    remaining = MAX_TOTAL_CHARS - total
     if remaining <= 0:
         break
-    if p.exists():
-        data = p.read_text(errors='replace')
-        limit = min(len(data), remaining)
-        if len(data) > limit:
-            data = data[:limit] + '\n[TRUNCATED BY REVIEWER]\n'
-        parts.append(f'\n===== FILE: {p} =====\n{data}')
-        remaining -= len(data)
+    data = data[:remaining]
+    parts.append(f'\n===== FILE: {p} =====\n{data}')
+    total += len(data)
 
 prompt = '''You are the independent adversarial reviewer for a Japan Real Estate Intelligence Agent.
 
-Do not trust the agent's own status labels. Attempt to falsify the supplied artifacts.
+Do not trust the agent's own status labels. Review the supplied repository artifacts and attempt to falsify them.
 
 Mandatory checks:
-1. Recalculate material financing/DSCR/NOI/cap-rate/cash-on-cash/amortization calculations that can be reproduced from stated inputs.
-2. Check exact geography: Tokyo 23 wards vs central 5 wards vs Greater Tokyo; Koto-ku vs Tokyo Bay; Osaka City vs Osaka Prefecture; Fukuoka City vs Fukuoka Prefecture; Sapporo City vs Chitose.
+1. Recalculate any material financing/DSCR/NOI/cap-rate/cash-on-cash/amortization calculations that can be reproduced from stated inputs.
+2. Check geography exactly: Tokyo 23 wards vs central 5 wards vs Greater Tokyo; Koto-ku vs Tokyo Bay; Osaka City vs Osaka Prefecture; Fukuoka City vs Fukuoka Prefecture; Sapporo City vs Chitose.
 3. Check property type, unit size, observation date, metric definition, gross-vs-net yield, asking-vs-transaction data, and Grade-A-vs-all-grade data.
-4. VERIFIED requires exact evidence location. HTTP 403 means inaccessible evidence, not proof the claim is false; recommend an accessible replacement source or downgrade.
-5. Check contradictions across claims, calculations, and report.
-6. PENDING/DISPUTED inputs must not drive rankings or material conclusions.
-7. Forecasts require explicit assumptions and calculations.
-8. Any unresolved BLOCKER means FAIL.
+4. Check whether every VERIFIED material claim has an exact evidence location. HTTP 403 means inaccessible evidence, not proof the claim is false; recommend an accessible replacement source or downgrade the claim.
+5. Check contradictions across claims/evidence/calculations/report.
+6. Check whether any PENDING/DISPUTED claim drives a ranking or material conclusion.
+7. Check whether forecasts have explicit assumptions and calculations.
+8. Treat any unresolved BLOCKER as FAIL.
 
-Return concise Markdown:
+Return concise Markdown with:
 - Overall status: PASS / FAIL / PASS_WITH_WARNINGS
 - Material error count
 - BLOCKER findings
 - MAJOR findings
 - MINOR findings
 - Required fixes
-- Evidence questions
-- APPROVED eligibility
+- Questions requiring evidence
+- Whether the report is eligible for APPROVED
 
-Do not create a new investment ranking.'''
+Do not create a new investment ranking. Do not assume the agent is correct.'''
 
-payload = {
-    'model': MODEL,
-    'input': prompt + '\n\nREPOSITORY ARTIFACTS:\n' + '\n'.join(parts),
-    'max_output_tokens': 3500,
-}
-
-req_data = json.dumps(payload).encode('utf-8')
-last_error = None
-for attempt in range(5):
-    req = Request(
-        'https://api.openai.com/v1/responses',
-        data=req_data,
-        headers={
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {API_KEY}',
-            'User-Agent': 'Spacework-Japan-RE-Reviewer/1.0',
-        },
-        method='POST',
-    )
-    try:
-        with urlopen(req, timeout=120) as resp:
-            result = json.loads(resp.read().decode('utf-8'))
-        break
-    except HTTPError as exc:
-        last_error = exc
-        if exc.code == 429 and attempt < 4:
-            # Exponential backoff with jitter for transient rate limits.
-            delay = (2 ** attempt) * 3 + random.uniform(0, 2)
-            print(f'OpenAI 429; retrying in {delay:.1f}s (attempt {attempt + 1}/5)')
+def call_model(model: str) -> tuple[str, bool]:
+    payload = {
+        'model': model,
+        'input': prompt + '\n\nREPOSITORY ARTIFACTS:\n' + '\n'.join(parts),
+    }
+    body = json.dumps(payload).encode('utf-8')
+    for attempt in range(MAX_RETRIES):
+        req = Request(
+            'https://api.openai.com/v1/responses',
+            data=body,
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {API_KEY}',
+            },
+            method='POST',
+        )
+        try:
+            with urlopen(req, timeout=120) as resp:
+                result = json.loads(resp.read().decode('utf-8'))
+            output = result.get('output_text')
+            if not output:
+                chunks = []
+                for item in result.get('output', []):
+                    for content in item.get('content', []):
+                        if isinstance(content, dict) and content.get('type') == 'output_text':
+                            chunks.append(content.get('text', ''))
+                output = '\n'.join(chunks).strip()
+            if not output:
+                raise RuntimeError('Reviewer returned no text')
+            return output, True
+        except HTTPError as exc:
+            if exc.code not in (429, 500, 502, 503, 504):
+                raise
+            if attempt == MAX_RETRIES - 1:
+                return f'REVIEW_CALL_FAILED: HTTP {exc.code}', False
+            delay = min(30, (2 ** attempt) + random.uniform(0.5, 2.5))
+            print(f'OpenAI HTTP {exc.code}; retrying in {delay:.1f}s (attempt {attempt + 1}/{MAX_RETRIES})')
             time.sleep(delay)
-            continue
-        raise
-    except (URLError, TimeoutError) as exc:
-        last_error = exc
-        if attempt < 4:
-            delay = (2 ** attempt) * 2 + random.uniform(0, 2)
-            print(f'OpenAI transport error; retrying in {delay:.1f}s (attempt {attempt + 1}/5)')
+        except (URLError, TimeoutError) as exc:
+            if attempt == MAX_RETRIES - 1:
+                return f'REVIEW_CALL_FAILED: {type(exc).__name__}', False
+            delay = min(30, (2 ** attempt) + random.uniform(0.5, 2.5))
+            print(f'OpenAI transport error; retrying in {delay:.1f}s (attempt {attempt + 1}/{MAX_RETRIES})')
             time.sleep(delay)
-            continue
-        raise
-else:
-    raise RuntimeError(f'OpenAI reviewer failed after retries: {last_error}')
 
-output = result.get('output_text')
-if not output:
-    chunks = []
-    for item in result.get('output', []):
-        for content in item.get('content', []):
-            if isinstance(content, dict) and content.get('type') == 'output_text':
-                chunks.append(content.get('text', ''))
-    output = '\n'.join(chunks).strip()
+    return 'REVIEW_CALL_FAILED: unknown', False
 
-if not output:
-    raise SystemExit('Reviewer returned no text')
+primary_output, primary_ok = call_model(PRIMARY_MODEL)
+output = primary_output
+model_used = PRIMARY_MODEL
+
+# Escalate only when the cheap reviewer finds a substantive problem.
+upper = primary_output.upper()
+needs_escalation = (
+    'STATUS: FAIL' in upper
+    or 'BLOCKER' in upper
+    or 'MAJOR FINDINGS' in upper and 'NONE' not in upper
+    or not primary_ok
+)
+
+if needs_escalation and ESCALATION_MODEL and ESCALATION_MODEL != PRIMARY_MODEL:
+    escalation_output, escalation_ok = call_model(ESCALATION_MODEL)
+    if escalation_ok:
+        output = escalation_output
+        model_used = f'{PRIMARY_MODEL} → {ESCALATION_MODEL}'
+    else:
+        output = primary_output + '\n\nESCALATION REVIEW FAILED: ' + escalation_output
 
 Path('verification/automatic-review.md').write_text(
-    '# Automatic External Review\n\n' +
-    f'Model: `{MODEL}`\n\n' +
-    output + '\n'
+    '# Automatic External Review\n\n'
+    f'Primary model: `{PRIMARY_MODEL}`\n\n'
+    f'Final model used: `{model_used}`\n\n'
+    + output + '\n'
 )
 print(output)
