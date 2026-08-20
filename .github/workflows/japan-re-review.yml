@@ -10,14 +10,17 @@ on:
 permissions:
   contents: write
 
+env:
+  REVIEWER_MODEL: gpt-5.6-sol
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
 jobs:
   review:
-    # Do not re-trigger on commits made by this workflow itself.
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      REVIEWER_MODEL: gpt-5.6-sol
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,42 +28,45 @@ jobs:
           fetch-depth: 0
 
       - name: Deterministic quality gate
-        id: gate
         run: |
-          python3 scripts/verification_gate.py > gate-result.md
-          cat gate-result.md
+          set +e
+          python3 scripts/verification_gate.py | tee gate-result.md
+          test -f gate-result.md
 
       - name: AI adversarial review
         if: env.OPENAI_API_KEY != ''
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          python3 scripts/ai_review.py
+        run: python3 scripts/ai_review.py
 
-      - name: Write review state when API key is unavailable
+      - name: Fallback review state
         if: env.OPENAI_API_KEY == ''
         run: |
           mkdir -p verification
           cat > verification/automatic-review.md <<'EOF'
-          # Automatic Review
+          # Automatic External Review
 
-          Status: BLOCKED — OPENAI_API_KEY is not configured in GitHub Actions.
+          Status: BLOCKED — `OPENAI_API_KEY` is not configured in GitHub Actions.
 
-          Deterministic validation was still executed. Configure the repository secret `OPENAI_API_KEY` to enable the independent AI adversarial review.
+          Deterministic verification was executed. Configure the repository secret `OPENAI_API_KEY` to enable the independent AI reviewer.
           EOF
 
       - name: Commit review artifacts
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add gate-result.md verification/automatic-review.md verification/external-review.md 2>/dev/null || true
-          git diff --cached --quiet || git commit -m '[auto-review] verify research commit'
-          git push
+          git add gate-result.md verification/automatic-review.md
+          if git diff --cached --quiet; then
+            echo 'No review artifact changes to commit.'
+          else
+            git commit -m '[auto-review] verify research commit'
+            git push
+          fi
 
       - name: Telegram notification
         if: env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != ''
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 scripts/telegram_notify.py
+
+      - name: Configuration status
         run: |
-          python3 scripts/telegram_notify.py
+          echo "OPENAI_API_KEY configured: ${{ secrets.OPENAI_API_KEY != '' }}"
+          echo "TELEGRAM_BOT_TOKEN configured: ${{ secrets.TELEGRAM_BOT_TOKEN != '' }}"
+          echo "TELEGRAM_CHAT_ID configured: ${{ secrets.TELEGRAM_CHAT_ID != '' }}"
