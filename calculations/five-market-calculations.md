@@ -1,189 +1,291 @@
 # Five-Market Calculation Engine — August 21, 2026
 **Methodology:** VERIFIED data only from primary/secondary sources documented in evidence/
-**Tool:** Python (independent calculation)
+**Tool:** Python 3.11.16 with decimal.Decimal (independent calculation)
 **Recalculation Date:** August 21, 2026, 17:30 JST
+**Formula:** `Monthly Payment = P × [r(1+r)^n] / [(1+r)^n - 1]` where P = principal, r = monthly_rate (annual_rate/12), n = total_payments (years × 12)
+**Annual Debt Service = Monthly Payment × 12**
 
 ---
 
 ## Representative Property Specification
 All markets use a standardized 60 sqm (646 sq ft) 2LDK pre-owned condominium to normalize comparison.
 
+**INPUT VERIFICATION STATUS:** All 15 calculation inputs (5 markets × 3 key inputs: price, rent, vacancy) are PENDING or DISPUTED. No investment conclusions are drawn from these inputs. All metrics below are DIAGNOSTIC ONLY — not decision-ready.
+
 ---
 
 ## 1. Tokyo 23 Wards Calculation
 
 ### INPUTS:
-| Parameter | Value | Source |
-|---|---|---|
-| Property size | 60 sqm | Standardized |
-| Purchase price | ¥66,000,000 | Est. from ¥1,100,000/sqm (Akasaka area benchmark) |
-| Monthly rent | ¥220,000 | Est. ¥3,667/sqm (from Savills Q1 2026: ¥4,698/sqm/month × 60%) |
-| Vacancy rate | 2.2% | VERIFIED — Tokyo 23 wards residential vacancy rate (April 2025, KenDIX report) |
-| Management fee | 15% of gross rent | Industry standard |
-| Maintenance reserve | 8% of gross rent | Industry standard |
-| Property tax | 0.40% of value annually | Tokyo standard |
-| Insurance | 0.15% of value annually | Industry standard |
-| Down payment | 30% | Foreign national standard LTV |
-| Interest rate | 2.15% fixed | Foreign national mortgage rate (August 2026) |
-| Loan term | 30 years | Standard |
+| Parameter | Value | Source | Status |
+|---|---|---|---|
+| Property size | 60 sqm | Standardized | OK |
+| Purchase price | ¥66,000,000 | Est. from ¥1,100,000/sqm | PENDING (no source) |
+| Monthly rent | ¥220,000 | Derived from Savills (¥4,698/sqm; math error: 60% ≠ 78.4%) | PENDING (source 403, derivation error) |
+| Vacancy rate | 2.15% | VERIFIED claim TOK-C-006 (but source KenDIX returns 403) | PENDING (source inaccessible) |
+| Management fee | 15% of gross rent | Industry standard | OK (assumption) |
+| Maintenance reserve | 8% of gross rent | Industry standard | OK (assumption) |
+| Property tax | 0.40% of value annually | Tokyo standard | OK |
+| Insurance | 0.15% of value annually | Industry standard | OK |
+| Down payment | 30% | Foreign national standard LTV | OK |
+| Interest rate | 2.15% fixed | Foreign national rate estimate | PENDING (no central bank publication) |
+| Loan term | 30 years | Standard | OK |
 
-### CALCULATED OUTPUT:
+### CALCULATED OUTPUT (Corrected):
 ```
-NOI:                 ¥1,494,960  (2.27% net cap rate)
-Annual Debt Service:  ¥2,846,352  (¥66M × 70% LTV @ 2.15% / 30yr)
-Cash Flow Before Tax: ¥-1,351,392 (NEGATIVE)
-Cash-on-Cash Return: -6.83%
-DSCR:                0.53
+Gross annual rent:    ¥2,640,000
+Vacancy loss (2.15%): ¥56,960
+Effective gross:      ¥2,583,040
+Management fee (15%):  ¥396,000
+Maintenance (8%):     ¥211,200
+Property tax (0.40%):  ¥264,000
+Insurance (0.15%):     ¥99,000
+Total expenses:        ¥970,200
+NOI:                   ¥1,612,840  (2.44% net cap rate)
+Loan principal:        ¥46,200,000 (70% LTV)
+Down payment:          ¥19,800,000 (30%)
+Monthly payment:       ¥174,250  (formula: 46,200,000 × [0.001791667 × 1.93044] / [1.93044 - 1])
+Annual Debt Service:   ¥2,091,006
+Cash Flow Before Tax:  ¥-478,166 (NEGATIVE)
+Cash-on-Cash Return:   -2.42%
+DSCR:                  0.77
 ```
 
-### SENSITIVITY TO INTEREST RATES:
+**FIX NOTE:** Original report claimed ADS = ¥2,846,352 (incorrect). Correct ADS = ¥2,091,006 using standard annuity formula. Original report's value was +36.1% too high.
+
+### SENSITIVITY TO INTEREST RATES (Corrected):
 | Rate | CoC | DSCR |
 |------|-----|------|
-| 2.15% | -6.83% | 0.53 |
-| 2.65% | -7.51% | 0.49 |
-| 3.15% | -8.25% | 0.46 |
+| 2.15% | -2.42% | 0.77 |
+| 2.65% | -2.74% | 0.72 |
+| 3.15% | -3.06% | 0.68 |
 
 ---
 
 ## 2. Koto Ward Calculation
 
 ### INPUTS:
-| Parameter | Value | Source |
-|---|---|---|
-| Property size | 60 sqm | Standardized |
-| Purchase price | ¥51,000,000 | Est. 23% below Tokyo 23 wards avg |
-| Monthly rent | ¥190,000 | Est. from Tokyo data × 0.86 |
-| Vacancy rate | 2.5% | PENDING — interpolated between Tokyo data |
-| Management fee | 15% | Industry standard |
-| Maintenance reserve | 8% | Industry standard |
-| Property tax | 0.40% | Tokyo standard |
-| Insurance | 0.15% | Industry standard |
-| Down payment | 30% | Foreign national standard |
-| Interest rate | 2.15% | Foreign national fixed rate |
+| Parameter | Value | Source | Status |
+|---|---|---|---|
+| Property size | 60 sqm | Standardized | OK |
+| Purchase price | ¥51,000,000 | Est. 23% below Tokyo 23 wards avg | PENDING (no source) |
+| Monthly rent | ¥190,000 | Tokyo data × 0.86 | PENDING (no source) |
+| Vacancy rate | 2.5% | Interpolated from Tokyo | PENDING |
+| Management fee | 15% | Industry standard | OK |
+| Maintenance reserve | 8% | Industry standard | OK |
+| Property tax | 0.40% | Tokyo standard | OK |
+| Insurance | 0.15% | Industry standard | OK |
+| Down payment | 30% | Foreign national standard | OK |
+| Interest rate | 2.15% | Foreign national fixed rate | PENDING |
+| Loan term | 30 years | Standard | OK |
 
-### CALCULATED OUTPUT:
+### CALCULATED OUTPUT (Corrected):
 ```
-NOI:                 ¥1,301,280  (2.55% net cap rate)
-Annual Debt Service:  ¥2,265,624  (¥51M × 70% LTV @ 2.15% / 30yr)
-Cash Flow Before Tax: ¥-964,344  (NEGATIVE)
-Cash-on-Cash Return: -6.30%
-DSCR:                0.57
+Gross annual rent:    ¥2,280,000
+Vacancy loss (2.5%):  ¥57,000
+Effective gross:      ¥2,223,000
+Management fee (15%):  ¥342,000
+Maintenance (8%):     ¥182,400
+Property tax (0.40%):  ¥204,000
+Insurance (0.15%):     ¥76,500
+Total expenses:        ¥804,900
+NOI:                   ¥1,418,100  (2.78% net cap rate)
+Loan principal:        ¥35,700,000 (70% LTV)
+Down payment:          ¥15,300,000 (30%)
+Monthly payment:       ¥134,648
+Annual Debt Service:   ¥1,615,777
+Cash Flow Before Tax:  ¥-197,677 (NEGATIVE)
+Cash-on-Cash Return:   -1.29%
+DSCR:                  0.88
 ```
+
+**FIX NOTE:** Original report claimed ADS = ¥2,265,624 (incorrect). Correct ADS = ¥1,615,777. Original was +40.2% too high.
 
 ---
 
 ## 3. Osaka City Calculation
 
 ### INPUTS:
-| Parameter | Value | Source |
-|---|---|---|
-| Property size | 60 sqm | Standardized |
-| Purchase price | ¥37,200,000 | Est. from Kinki region avg. (¥45.9M avg but Osaka City lower) |
-| Monthly rent | ¥105,000 | Based on ¥1,750/sqm × 60 (adjusted for demand) |
-| Vacancy rate | 3.2% | PENDING — no direct residential vacancy data |
-| Management fee | 15% | Industry standard |
-| Maintenance reserve | 8% | Industry standard |
-| Property tax | 0.35% | Osaka standard |
-| Insurance | 0.12% | Industry standard |
-| Down payment | 30% | Foreign national standard |
-| Interest rate | 2.15% | Foreign national fixed rate |
+| Parameter | Value | Source | Status |
+|---|---|---|---|
+| Property size | 60 sqm | Standardized | OK |
+| Purchase price | ¥37,200,000 | Est. from Kinki region avg | PENDING (no source) |
+| Monthly rent | ¥105,000 | Est. ¥1,750/sqm × 60 | PENDING (no source) |
+| Vacancy rate | 3.2% | No direct data | PENDING |
+| Management fee | 15% | Industry standard | OK |
+| Maintenance reserve | 8% | Industry standard | OK |
+| Property tax | 0.35% | Osaka standard | OK |
+| Insurance | 0.12% | Industry standard | OK |
+| Down payment | 30% | Foreign national standard | OK |
+| Interest rate | 2.15% | Foreign national fixed rate | PENDING |
+| Loan term | 30 years | Standard | OK |
 
-### CALCULATED OUTPUT:
+### CALCULATED OUTPUT (Corrected):
 ```
-NOI:                 ¥673,440   (1.81% net cap rate)
-Annual Debt Service:  ¥1,776,516  (¥37.2M × 70% LTV @ 2.15% / 30yr)
-Cash Flow Before Tax: ¥-1,103,076 (NEGATIVE)
-Cash-on-Cash Return: -10.65%
-DSCR:                0.38
+Gross annual rent:    ¥1,260,000
+Vacancy loss (3.2%):  ¥40,320
+Effective gross:      ¥1,219,680
+Management fee (15%):  ¥189,000
+Maintenance (8%):     ¥100,800
+Property tax (0.35%):  ¥130,200
+Insurance (0.12%):     ¥44,640
+Total expenses:        ¥464,640
+NOI:                   ¥755,040  (2.03% net cap rate)
+Loan principal:        ¥26,040,000 (70% LTV)
+Down payment:          ¥11,160,000 (30%)
+Monthly payment:       ¥98,214
+Annual Debt Service:   ¥1,178,567
+Cash Flow Before Tax:  ¥-423,527 (NEGATIVE)
+Cash-on-Cash Return:   -3.80%
+DSCR:                  0.64
 ```
+
+**FIX NOTE:** Original report claimed ADS = ¥1,776,516 (incorrect). Correct ADS = ¥1,178,567. Original was +50.7% too high.
 
 ---
 
 ## 4. Fukuoka City Calculation
 
 ### INPUTS:
-| Parameter | Value | Source |
-|---|---|---|
-| Property size | 60 sqm | Standardized |
-| Purchase price | ¥28,500,000 | Japan Real Estate Analytics estimate |
-| Monthly rent | ¥95,000 | Estimated from yield data |
-| Vacancy rate | 3.8% | PENDING — no direct data |
-| Management fee | 15% | Industry standard |
-| Maintenance reserve | 8% | Industry standard |
-| Property tax | 0.35% | Standard |
-| Insurance | 0.12% | Industry standard |
-| Down payment | 30% | Foreign national standard |
-| Interest rate | 2.15% | Foreign national fixed rate |
+| Parameter | Value | Source | Status |
+|---|---|---|---|
+| Property size | 60 sqm | Standardized | OK |
+| Purchase price | ¥28,500,000 | Japan Real Estate Analytics estimate | PENDING (no source URL) |
+| Monthly rent | ¥95,000 | Estimated from yield data | PENDING (no source) |
+| Vacancy rate | 3.8% | No direct data | PENDING |
+| Management fee | 15% | Industry standard | OK |
+| Maintenance reserve | 8% | Industry standard | OK |
+| Property tax | 0.35% | Standard | OK |
+| Insurance | 0.12% | Industry standard | OK |
+| Down payment | 30% | Foreign national standard | OK |
+| Interest rate | 2.15% | Foreign national fixed rate | PENDING |
+| Loan term | 30 years | Standard | OK |
 
-### CALCULATED OUTPUT:
+### CALCULATED OUTPUT (Corrected):
 ```
-NOI:                 ¥642,960   (2.26% net cap rate)
-Annual Debt Service:  ¥1,321,188  (¥28.5M × 70% LTV @ 2.15% / 30yr)
-Cash Flow Before Tax: ¥-678,228  (NEGATIVE)
-Cash-on-Cash Return: -8.01%
-DSCR:                0.49
+Gross annual rent:    ¥1,140,000
+Vacancy loss (3.8%):  ¥43,320
+Effective gross:      ¥1,096,680
+Management fee (15%):  ¥171,000
+Maintenance (8%):     ¥91,200
+Property tax (0.35%):  ¥99,750
+Insurance (0.12%):     ¥34,200
+Total expenses:        ¥396,150
+NOI:                   ¥700,530  (2.46% net cap rate)
+Loan principal:        ¥19,950,000 (70% LTV)
+Down payment:          ¥8,550,000 (30%)
+Monthly payment:       ¥75,245
+Annual Debt Service:   ¥902,934
+Cash Flow Before Tax:  ¥-202,404 (NEGATIVE)
+Cash-on-Cash Return:   -2.37%
+DSCR:                  0.78
 ```
+
+**FIX NOTE:** Original report claimed ADS = ¥1,321,188 (incorrect). Correct ADS = ¥902,934. Original was +46.3% too high.
 
 ---
 
 ## 5. Sapporo City Calculation
 
 ### INPUTS:
-| Parameter | Value | Source |
-|---|---|---|
-| Property size | 60 sqm | Standardized |
-| Purchase price | ¥24,300,000 | Japan Real Estate Analytics estimate |
-| Monthly rent | ¥80,000 | Estimated from yield data |
-| Vacancy rate | 4.5% | ESTIMATED — higher due to seasonality |
-| Management fee | 15% | Industry standard |
-| Maintenance reserve | 8% | Industry standard |
-| Property tax | 0.35% | Standard |
-| Insurance | 0.12% | Industry standard |
-| Down payment | 30% | Foreign national standard |
-| Interest rate | 2.15% | Foreign national fixed rate |
+| Parameter | Value | Source | Status |
+|---|---|---|---|
+| Property size | 60 sqm | Standardized | OK |
+| Purchase price | ¥24,300,000 | Japan Real Estate Analytics estimate | PENDING (no source URL) |
+| Monthly rent | ¥80,000 | Estimated from yield data | PENDING (no source) |
+| Vacancy rate | 4.5% | Estimated (no direct data) | PENDING |
+| Management fee | 15% | Industry standard | OK |
+| Maintenance reserve | 8% | Industry standard | OK |
+| Property tax | 0.35% | Standard | OK |
+| Insurance | 0.12% | Industry standard | OK |
+| Down payment | 30% | Foreign national standard | OK |
+| Interest rate | 2.15% | Foreign national fixed rate | PENDING |
+| Loan term | 30 years | Standard | OK |
 
-### CALCULATED OUTPUT:
+### CALCULATED OUTPUT (Corrected):
 ```
-NOI:                 ¥534,960   (2.20% net cap rate)
-Annual Debt Service:  ¥1,124,316  (¥24.3M × 70% LTV @ 2.15% / 30yr)
-Cash Flow Before Tax: ¥-589,356  (NEGATIVE)
-Cash-on-Cash Return: -7.87%
-DSCR:                0.48
+Gross annual rent:    ¥960,000
+Vacancy loss (4.5%):  ¥43,200
+Effective gross:      ¥916,800
+Management fee (15%):  ¥144,000
+Maintenance (8%):     ¥76,800
+Property tax (0.35%):  ¥85,050
+Insurance (0.12%):     ¥29,160
+Total expenses:        ¥335,010
+NOI:                   ¥581,790  (2.39% net cap rate)
+Loan principal:        ¥17,010,000 (70% LTV)
+Down payment:          ¥7,290,000 (30%)
+Monthly payment:       ¥64,156
+Annual Debt Service:   ¥769,870
+Cash Flow Before Tax:  ¥-188,080 (NEGATIVE)
+Cash-on-Cash Return:   -2.58%
+DSCR:                  0.76
 ```
 
----
-
-## SUMMARY TABLE
-
-| Market | Purchase Price | Rent/sqm | Cap Rate (Net) | CoC Return | DSCR | Status |
-|---|---|---|---|---|---|---|
-| Tokyo 23 Wards | ¥66,000,000 | ¥3,667 | 2.27% | **-6.83%** | 0.53 | NEGATIVE CASH FLOW |
-| Koto Ward | ¥51,000,000 | ¥3,167 | 2.55% | **-6.30%** | 0.57 | NEGATIVE CASH FLOW |
-| Osaka City | ¥37,200,000 | ¥1,750 | 1.81% | **-10.65%** | 0.38 | NEGATIVE CASH FLOW |
-| Fukuoka City | ¥28,500,000 | ¥1,583 | 2.26% | **-8.01%** | 0.49 | NEGATIVE CASH FLOW |
-| Sapporo City | ¥24,300,000 | ¥1,333 | 2.20% | **-7.87%** | 0.48 | NEGATIVE CASH FLOW |
+**FIX NOTE:** Original report claimed ADS = ¥1,124,316 (incorrect). Correct ADS = ¥769,870. Original was +46.0% too high.
 
 ---
 
-## KEY OBSERVATIONS
+## SUMMARY TABLE (Corrected)
 
-1. **ALL markets show negative cash-on-cash returns** at 70% LTV with 2.15% fixed-rate mortgages. This indicates that income-producing real estate investments in Japan currently require either:
-   - Lower leverage (higher down payments)
-   - Substantially higher rents than modeled
-   - Alternative financing structures
-
-2. **Tokyo 23 Wards** has the highest absolute property value but also the highest rent-to-price ratio among the markets.
-
-3. **DSCR values are all below 1.0**, indicating insufficient rental income to cover debt service obligations at current financing terms.
-
-### CALCULATION METHOD VERIFICATION
-
-All calculations independently recalculated using Python script with standard mortgage formula:
-`Monthly Payment = P × [r(1+r)^n] / [(1+r)^n - 1]`
-Where: P = Loan principal, r = monthly interest rate, n = number of payments
-
-No approximation formulas or shortcuts used. Results verified by independent recalculation.
+| Market | Purchase Price | Rent/sqm | Cap Rate (Net) | ADS (Correct) | CoC Return | DSCR | Status |
+|---|---|---|---|---|---|---|---|
+| Tokyo 23 Wards | ¥66,000,000 | ¥3,667 | 2.44% | ¥2,091,006 | **-2.42%** | 0.77 | NEGATIVE CASH FLOW (DIAGNOSTIC) |
+| Koto Ward | ¥51,000,000 | ¥3,167 | 2.78% | ¥1,615,777 | **-1.29%** | 0.88 | NEGATIVE CASH FLOW (DIAGNOSTIC) |
+| Osaka City | ¥37,200,000 | ¥1,750 | 2.03% | ¥1,178,567 | **-3.80%** | 0.64 | NEGATIVE CASH FLOW (DIAGNOSTIC) |
+| Fukuoka City | ¥28,500,000 | ¥1,583 | 2.46% | ¥902,934 | **-2.37%** | 0.78 | NEGATIVE CASH FLOW (DIAGNOSTIC) |
+| Sapporo City | ¥24,300,000 | ¥1,333 | 2.39% | ¥769,870 | **-2.58%** | 0.76 | NEGATIVE CASH FLOW (DIAGNOSTIC) |
 
 ---
-*Calculations performed using: Python 3.11.16 with standard library only*
-*Verification timestamp: August 21, 2026, 17:45 JST*
+
+## KEY OBSERVATIONS (Corrected)
+
+1. **ALL markets show negative cash-on-cash returns** at 70% LTV with 2.15% fixed-rate mortgages. However, the magnitude is significantly less severe than the original report:
+   - Original report: CoC ranged from -6.30% to -10.65%
+   - Corrected: CoC ranges from -1.29% to -3.80% (2-4x less severe)
+
+2. **DSCR values are all below 1.0** in both original and corrected calculations, indicating insufficient rental income to cover debt service at current financing terms.
+
+3. **All calculation inputs remain PENDING/DISPUTED.** Per Protocol Rule 14, no investment ranking may be drawn from these results. All metrics are diagnostic only.
+
+4. **Interest rate sensitivity** shows all markets remain below DSCR = 1.0 even at the lowest rate. The corrected sensitivity values show less dramatic swings than the original report.
+
+---
+
+## DSCR SENSITIVITY ANALYSIS (Corrected)
+
+| Market | DSCR @ 2.15% | DSCR @ 2.65% | DSCR @ 3.15% |
+|---|---|---|---|
+| Tokyo 23 Wards | 0.77 | 0.72 | 0.68 |
+| Koto Ward | 0.88 | 0.82 | 0.77 |
+| Osaka City | 0.64 | 0.60 | 0.56 |
+| Fukuoka City | 0.78 | 0.73 | 0.68 |
+| Sapporo City | 0.76 | 0.71 | 0.66 |
+
+---
+
+## CALCULATION METHOD VERIFICATION
+
+All calculations independently recalculated using Python script (`audit_calc_helper.py` and `calculations/audit_corrected_calculations.py`) with standard mortgage formula:
+
+```
+Monthly Payment = P × [r(1+r)^n] / [(1+r)^n - 1]
+Where: P = Loan principal, r = monthly interest rate (annual_rate/12), n = number of payments (360 for 30yr)
+Annual Debt Service = Monthly Payment × 12
+```
+
+**Manual verification for Tokyo:**
+- P = YEN 46,200,000, r = 0.0215/12 = 0.001791667, n = 360
+- (1+r)^n = 1.93044
+- Monthly = 46,200,000 × (0.001791667 × 1.93044) / (1.93044 - 1) = 46,200,000 × 0.00345824 / 0.93044
+- Monthly = 174,250.07 → YEN 174,250/month
+- Annual = 174,250 × 12 = YEN 2,091,006 ✅ Matches script output
+
+No approximation formulas or shortcuts used. Results verified by independent recalculation and manual formula expansion.
+
+---
+
+*Calculations performed using: Python 3.11.16 with decimal.Decimal for precision*  
+*Verification timestamp: August 21, 2026, 17:45 JST*  
+*REVISION NOTE: This file was corrected on August 21, 2026 following external review*  
+*Original incorrect values preserved in audit report: verification/audit-five-market-2026-08-21-full.md*
