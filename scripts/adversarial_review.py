@@ -23,8 +23,8 @@ from datetime import datetime, timezone
 
 WORK_DIR = "/Users/hufait/spacework-audit"
 REVIEW_FILE = Path(WORK_DIR + "/verification/automatic-review.md")
-GIT_BIN = "/usr/bin/git"
-PYTHON3_BIN = "/usr/local/bin/python3"
+GIT_BIN = "/usr/local/bin/git"
+PYTHON3_BIN = "/usr/bin/python3"
 
 def run_calc_check():
     """Run the corrected calculation script and verify results."""

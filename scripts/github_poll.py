@@ -30,8 +30,8 @@ STATE_FILE = Path(WORK_DIR + "/.hermes/poll-state.json")
 
 # Absolute paths for cron environment
 GH_BIN = "/usr/local/bin/gh"
-GIT_BIN = "/usr/bin/git"
-PYTHON3_BIN = "/usr/local/bin/python3"
+GIT_BIN = "/usr/local/bin/git"
+PYTHON3_BIN = "/usr/bin/python3"
 
 def get_remote_head():
     """Get the latest commit SHA from the remote branch via gh CLI."""
