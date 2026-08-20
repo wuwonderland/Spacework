@@ -1,0 +1,15 @@
+# Hermes CLI internal state
+.hermes/
+
+# Cron poll run logs
+runlogs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# OS
+.DS_Store
