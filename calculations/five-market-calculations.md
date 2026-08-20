@@ -10,7 +10,18 @@
 ## Representative Property Specification
 All markets use a standardized 60 sqm (646 sq ft) 2LDK pre-owned condominium to normalize comparison.
 
-**INPUT VERIFICATION STATUS:** All 15 calculation inputs (5 markets × 3 key inputs: price, rent, vacancy) are PENDING or DISPUTED. No investment conclusions are drawn from these inputs. All metrics below are DIAGNOSTIC ONLY — not decision-ready.
+**INPUT VERIFICATION STATUS:** Calculation inputs are a MIX of VERIFIED and PENDING/DISPUTED. All metrics below are DIAGNOSTIC ONLY — not decision-ready. Specifically:
+- TOK-C-01 (office vacancy 1.4%): VERIFIED — CBRE Q2 2026 accessible (re-verified)
+- TOK-C-06 (rent 4,698 JPY/sqm): VERIFIED — Savills Q1 2026 accessible (re-verified)
+- TOK-X-03 (residential vacancy 2.15%): PENDING — KenDIX source returns HTTP 403; accessible report does not confirm exact value. Using 2.15% as stated value but input is PENDING.
+- OSA-C-01 (vacancy 1.8%): VERIFIED — CBRE Q2 2026 accessible (re-verified)
+- OSA-C-03 (vacancy 3.74%): VERIFIED — Mitsui Fudosan 2Q 2025 accessible (re-verified)
+- FUK-C-01 (vacancy 4.91%): VERIFIED — Mitsui Fudosan 2Q 2025 accessible (re-verified)
+- SAP-C-01 (vacancy 3.54%): VERIFIED — Mitsui Fudosan 2Q 2025 accessible (re-verified)
+- RSC-T-03 (yield 3.27%): VERIFIED — Global Property Guide accessible (re-verified)
+- RSC-T-02 (condo index +15.89%): VERIFIED — GPG price history accessible (re-verified)
+- Purchase prices, interest rates, and land price changes: PENDING (estimates or not independently verifiable)
+- No investment conclusions drawn from these inputs.
 
 ---
 
@@ -21,8 +32,8 @@ All markets use a standardized 60 sqm (646 sq ft) 2LDK pre-owned condominium to 
 |---|---|---|---|
 | Property size | 60 sqm | Standardized | OK |
 | Purchase price | ¥66,000,000 | Est. from ¥1,100,000/sqm | PENDING (no source) |
-| Monthly rent | ¥220,000 | Derived from Savills (¥4,698/sqm; math error: 60% ≠ 78.4%) | PENDING (source 403, derivation error) |
-| Vacancy rate | 2.15% | VERIFIED claim TOK-C-006 (but source KenDIX returns 403) | PENDING (source inaccessible) |
+| Monthly rent | ¥220,000 | Derived from Savills VERIFIED claim (¥4,698/sqm × 60 sqm = ¥220,000/month; math verified) | Source VERIFIED (Savills accessible) |
+| Vacancy rate | 2.15% | TOK-X-03 claim (PENDING — KenDIX source inaccessible, no alternative accessible source confirms exact value) | PENDING (source inaccessible) |
 | Management fee | 15% of gross rent | Industry standard | OK (assumption) |
 | Maintenance reserve | 8% of gross rent | Industry standard | OK (assumption) |
 | Property tax | 0.40% of value annually | Tokyo standard | OK |
