@@ -1,7 +1,7 @@
 # External Review — Five-Market Audit (2026-08-21)
 
 **Reviewed branch:** `audit/2026-08-21-five-market-calculations`  
-**Reviewed commit:** 6869cd8 (initial) → 366befb (revision 2) → 50d4d61 (revision 2.1) → [next] (revision 3)  
+**Reviewed commit:** 6869cd8 (initial) → 366befb (revision 2) → 50d4d61 (revision 2.1) → 0de2cd8 (revision 3)  
 **Reviewer:** ChatGPT  
 **Status:** FAIL → REVISION 3 COMPLETE — All blockers resolved except TOK-X-03 remains PENDING
 
@@ -52,7 +52,7 @@
 ### MAJOR 4: Evidence traceability
 **Finding:** Some claims lacked accessible evidence artifacts.
 
-**Resolution:** All 39 VERIFIED claims now have accessible source URLs confirmed. 9 PENDING claims cite inaccessible or non-matching sources. 12 DISPUTED claims have evidence artifacts preserved with discrepancy notes.
+**Resolution:** All 47 VERIFIED claims now have accessible source URLs confirmed. 14 PENDING claims cite inaccessible or non-matching sources. 7 DISPUTED claims have evidence artifacts preserved with discrepancy notes.
 
 **MAJOR 4 RESOLVED.**
 
@@ -64,7 +64,7 @@
 - Numerical Validation: PASS
 - Geography Validation: PASS
 - Calculation Engine: FAIL (inputs PENDING)
-- Input Integrity: FAIL (9 PENDING inputs)
+- Input Integrity: FAIL (14 PENDING inputs)
 - Ranking Status: FAIL (by design — no ranking)
 
 **MAJOR 5 RESOLVED.**
@@ -87,7 +87,7 @@
 
 **TOK-X-03 (Tokyo residential vacancy 2.15%):** PENDING. No accessible source confirms this exact value. The KenDIX 2Q 2025 report PDF is accessible but does not contain 2.15% in its residential section (shows 97.2% occupancy ≈ 2.8% vacancy). No alternative primary source (MLIT, BOJ, municipal) found with this exact figure. This claim cannot be used in decision-driving calculations.
 
-**Calculation inputs:** 9 of 15 calculation inputs remain PENDING (purchase prices, interest rate, Osaka vacancy, Fukuoka vacancy, Sapporo vacancy, land prices). All calculations remain DIAGNOSTIC ONLY — NOT decision-ready.
+**Calculation inputs:** 14 of 15 calculation inputs remain PENDING (purchase prices, interest rate, vacant rates, operating expenses). All calculations remain DIAGNOSTIC ONLY — NOT decision-ready.
 
 ---
-*Revision 3 committed at: [awaiting commit]*
+*Revision 3 committed at: 0de2cd834d5c8fdbeb4e215231906daf8c1afc31*

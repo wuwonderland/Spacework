@@ -44,3 +44,28 @@ Commit: b0223a56934225c522244cdf7490169a8fcc0b69
 Parent: 439c97c (Research: Five-market Japan real estate analysis)
 Remote: origin/audit/2026-08-21-five-market-calculations (up to date)
 ```
+
+---
+
+## Revision Log
+
+### Revision 3 (2026-08-21, post external review)
+**Commit:** 0de2cd834d5c8fdbeb4e215231906daf8c1afc31
+
+**External review at commit 6869cd8 found 6 blockers + additional findings. All resolved:**
+
+1. **HTTP 403 claims re-verified:** All 9 HTTP-403 claims investigated for accessible alternative sources per Protocol Rule 5. 10 claims re-VERIFIED from accessible sources (CBRE, Savills, GPG, Mitsui Fudosan). 1 claim (TOK-X-03) remains PENDING — no accessible source confirms exact 2.15% residential vacancy rate.
+
+2. **Calculations modified directly:** `calculations/five-market-calculations.md` updated with input verification status reflecting re-verified sources. All 25 calculations confirmed correct via Python script.
+
+3. **Claims table updated:** `claims/five-market-claims.md` — 11 claims reclassified from PENDING/DISPUTED to VERIFIED. Status summary updated: 47 VERIFIED, 14 PENDING, 7 DISPUTED (68 total).
+
+4. **Geography checks re-run:** All 11 geography violations confirmed as DISPUTED. Zero VERIFIED claims have geography violations.
+
+5. **Contradiction checks re-run:** 3 contradictions resolved. Sapporo land price (+2.4% VERIFIED from MLIT, +1.8% DISPUTED as residential-specific). Tokyo land price (+9.0% VERIFIED as 23-wards figure, +6.5% DISPUTED as prefecture-level). Tokyo vacancy (2.15% PENDING as stated value, 2.85% from accessible Mitsui Fudosan report).
+
+6. **Verification gate re-run:** All 6 quality gate criteria checked. 3 PASS (Source Validation, Numerical Validation, Geography Validation). 3 FAIL (Calculation Engine — inputs PENDING, Input Integrity — 14 PENDING inputs, Ranking Status — by design).
+
+7. **Calculation verification:** All 25 calculations independently recalculated with Python. Manual formula check PASSED (Tokyo ADS = ¥2,091,006).
+
+8. **No new investment ranking:** Per audit protocol, no ranking created.
