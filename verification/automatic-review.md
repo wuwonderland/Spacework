@@ -6,113 +6,116 @@ Final model used: `gpt-5.6-luna → gpt-5.6-sol`
 
 # Independent Adversarial Review
 
-## Overall status: **FAIL**
-
-**Material error count: 11** — 3 BLOCKER, 8 MAJOR.  
-The report is not synchronized with the corrected calculation file and its ranking materially depends on PENDING/DISPUTED inputs.
+**Overall status: FAIL**  
+**Material error count: 12** — 3 BLOCKER, 9 MAJOR  
+**Eligible for APPROVED: NO**
 
 ## BLOCKER findings
 
-1. **The published financing results are materially wrong and contradict the repository’s corrected calculations.**
-   - Report CoC: **-6.30% to -10.65%**; corrected file: **-1.29% to -3.80%**.
-   - Report DSCR at 2.15%: **0.38–0.57**; corrected file: **0.64–0.88**.
-   - Osaka report net cap rate: **1.81%**; reproducible corrected value: **2.03%**.
-   - The report’s sensitivity table, rankings, weaknesses and investment implications still use the superseded numbers.
+1. **Decision report contains obsolete, materially incorrect financing results.**  
+   The report uses the superseded calculations rather than `calculations/five-market-calculations.md`.
 
-2. **PENDING inputs directly drive the ranking and principal conclusion.**
-   - Purchase prices, market rents, residential vacancy rates, mortgage rate and operating-expense assumptions are mostly PENDING or unsupported.
-   - Koto’s price, rent and vacancy are entirely interpolated/estimated.
-   - Nevertheless, the report says the ranking uses “only VERIFIED data” and presents decisive CoC, DSCR and entry-price comparisons.
-   - This directly contradicts `calculations/five-market-calculations.md`, which says the results are “DIAGNOSTIC ONLY” and that no ranking may be drawn.
+   | Market | Report CoC | Recalculated CoC* | Report DSCR | Recalculated DSCR* |
+   |---|---:|---:|---:|---:|
+   | Tokyo 23 wards | -6.83% | -2.42% | 0.53 | 0.77 |
+   | Koto | -6.30% | -1.29% | 0.57 | 0.88 |
+   | Osaka | -10.65% | -3.80% | 0.38 | 0.64 |
+   | Fukuoka | -8.01% | -2.37% | 0.49 | 0.78 |
+   | Sapporo | -7.87% | -2.58% | 0.48 | 0.76 |
 
-3. **Tokyo rent is arithmetically misderived, potentially reversing the “all markets negative” conclusion.**
-   - The calculation file says `¥4,698/sqm × 60 sqm = ¥220,000/month`; the actual result is **¥281,880/month**.
-   - Using the stated assumptions:
-     - Gross annual rent: **¥3,382,560**
-     - NOI: approximately **¥2,168,846**
-     - ADS: approximately **¥2,091,006**
-     - DSCR: approximately **1.04**
-     - CoC: approximately **+0.39%**
-   - Thus, if ¥4,698/sqm/month is genuinely applicable to a 60 sqm 2LDK, the report’s central statement that all five markets are negative is false.
+   \*These match the corrected file within rounding when its stated, mostly PENDING inputs are accepted. Thus the report’s ranking, sensitivity table, net cap rates, and negative-carry magnitudes are stale.
+
+2. **The ranking is driven by PENDING/DISPUTED inputs despite claiming “VERIFIED data only.”**  
+   Purchase prices, rents outside Tokyo, residential vacancy assumptions, mortgage rate, operating expenses, and several population/yield inputs are PENDING or unsupported. The calculation file expressly says no ranking may be drawn from them, while the report presents a definitive ranking and scores.
+
+3. **Material VERIFIED claims lack repository-grade exact evidence locations.**  
+   The source table contains homepages and “Various reports/Various PDF links,” while many claim locations are only “report,” “summary,” or “same source.” No supplied evidence artifacts establish all 47 VERIFIED claims at exact page/table/row locations. The claim file’s assertion that all are accessible is therefore not reproducible from the supplied repository.
 
 ## MAJOR findings
 
-1. **Koto-ku is improperly represented by Tokyo Bay data.**  
-   The 5.8% vacancy rate covers the broader Tokyo Bay area, not Koto-ku. Claims classify it DISPUTED, but the report includes it in “Verified Market Data.”
+1. **Tokyo rent derivation is arithmetically wrong and may reverse the headline conclusion.**  
+   `¥4,698/sqm/month × 60 sqm = ¥281,880/month`, not ¥220,000.
 
-2. **Osaka City and Osaka Prefecture are mixed.**
-   - Tourism of 14.2 million is prefecture-level, not Osaka City.
-   - The stated Osaka City population of **8.76 million** appears to be prefecture-scale; Osaka City is roughly one-third of that. Exact municipal evidence is required.
-   - These data support Osaka’s risk and catalyst narrative despite the mismatch.
+   Using the stated assumptions:
 
-3. **Fukuoka City and Fukuoka Prefecture are mixed.**  
-   The +5.8% land-price change is prefecture-level and classified DISPUTED, but appears in the city comparison.
+   - Gross annual rent: **¥3,382,560**
+   - Vacancy loss at 2.15%: **¥72,725**
+   - Operating expenses: **¥1,140,989**
+   - NOI: **¥2,168,846**
+   - Net cap rate: **3.29%**
+   - ADS: approximately **¥2.091M**
+   - DSCR: approximately **1.04**
+   - CoC: approximately **+0.39%**
 
-4. **Sapporo and Chitose are mixed.**
-   - Chitose’s +44.1% land-price change and Rapidus investment are not Sapporo City observations.
-   - Rapidus is nevertheless presented as a Sapporo ranking strength and used to characterize Sapporo’s industry concentration.
+   Although vacancy and other inputs remain unverified, this falsifies the report’s categorical “all five markets negative” conclusion under its claimed source-derived Tokyo rent.
 
-5. **Gross-yield claims do not reconcile to the representative properties.**
+2. **The mortgage audit contains an inconsistent manual expansion.**  
+   At `r = 0.0215/12` and `n = 360`, `(1+r)^n` is approximately **1.905**, not **1.93044**. The reported payment outputs are close to the correct annuity results, but the displayed verification cannot generate those outputs.
 
-   | Market | Rent and price implied gross yield | Reported market yield |
-   |---|---:|---:|
-   | Tokyo | 4.00% using ¥220k and ¥66m | 3.27% |
-   | Koto | 4.47% | ~3.5% |
-   | Osaka | 3.39% | 4.78% |
-   | Fukuoka | 4.00% | 4.77% |
-   | Sapporo | 3.95% | 5.03% |
+3. **Osaka City population is geographically implausible.**  
+   The report/claims use **8.76 million** for Osaka City; that is approximately prefecture-scale, not city-scale. This invalidates the claimed city population and related growth/risk conclusions unless exact city evidence is produced.
 
-   City-average GPG yields cannot be substituted for a standardized 60 sqm pre-owned 2LDK without matching property type, unit size, price basis and observation period.
+4. **Broader geographies continue to influence city/ward conclusions.**
+   - Tokyo Bay vacancy is not Koto-ku vacancy.
+   - Osaka Prefecture tourism is not Osaka City tourism.
+   - Fukuoka Prefecture land growth is not Fukuoka City growth.
+   - Chitose land growth and Rapidus investment are not Sapporo City metrics.
+   - Tokyo CBD/central five wards are not interchangeable with Tokyo 23 wards.
+   
+   Several are marked DISPUTED in claims but still appear in the report’s “Verified Market Data,” strengths, catalysts, or risk narrative.
 
-6. **Property and metric definitions are not comparable.**
-   - Office vacancy is used to support residential-condominium investment conclusions.
-   - New-condo prices and supply are used alongside estimated pre-owned-condo economics.
-   - Asking rents, average rents and estimated rents are mixed.
-   - There is no demonstrated match for building age, unit size, grade or transaction-versus-asking basis.
-   - Tokyo CBD/central-five-ward office rent is not a Tokyo-23-ward residential metric.
+5. **Gross-yield metrics do not reconcile with representative-property inputs.**
+   - Tokyo model: 4.00% from ¥220,000 rent, or 5.12% using the actual `¥4,698 × 60`; cited market yield: 3.27%.
+   - Osaka model: 3.39%; cited yield: 4.78%.
+   - Fukuoka model: 4.00%; cited yield: 4.77%.
+   - Sapporo model: 3.95%; cited yield: 5.03%.
+   - Koto model: 4.47%; narrative says about 3.5%.
 
-7. **VERIFIED evidence traceability is insufficient.**
-   - Several locations are generic—“Various reports,” “October 2025 report,” “same source,” “press release summary,” or a publisher homepage—rather than an exact accessible URL, page/table and quoted passage.
-   - The repository statement that all 47 VERIFIED claims have accessible evidence is not demonstrated by the supplied artifacts.
-   - HTTP 403 is handled correctly for TOK-X-03 in the claims/calculation files, but the main report still places the 2.15% value in its “Verified Market Data” section.
+   Market-average gross yields and modeled 60 sqm property economics are being mixed without matching unit size, bedroom count, property age, asking/transaction basis, or observation sample.
 
-8. **The scoring and material risk conclusions are not reproducible.**
-   - No formula or criterion weights explain scores such as 18/25 and 16/25.
-   - Liquidity ordering, “safest market,” “highest valuation risk,” “single-industry risk,” demographic labels and disaster-risk gradings lack exact evidence or calculation.
-   - The report therefore cannot establish that its ordering follows only verified evidence.
+6. **Property and metric definitions are not comparable.**  
+   New-condominium transaction prices, pre-owned representative properties, residential rents, office vacancies/rents, land-price changes, and broad apartment gross yields are combined into one score without a documented normalization. Grade-A and all-grade office metrics are mostly labeled, but central-five-ward, CBD, citywide, and all-grade series are not consistently comparable.
+
+7. **The scoring model is not reproducible.**  
+   Scores such as 18/25 and 16/25 have no factor weights, formulas, normalization, or calculation trail. Claims including “highest liquidity,” “capital preservation,” “youngest demographics,” “proven long-term appreciation,” and disaster-risk levels lack exact evidence.
+
+8. **Operating and CoC assumptions are insufficiently supported.**
+   - Tax is described as a percentage of “assessed value,” but calculations apply it to purchase price.
+   - Management and reserve percentages are generic assumptions, not market/property evidence.
+   - CoC excludes acquisition taxes, brokerage, registration, financing fees, and other initial cash, overstating economic CoC.
+   - The 2.15% foreign-national fixed rate and 70% LTV are PENDING but are presented as “standard terms.”
+
+9. **Observation periods and source labels are inconsistent.**  
+   The August 2026 ranking mixes April/August 2025, FY2025, Q1/Q2 2026, and static data without staleness adjustments. Some report attributions conflict with claims—for example, Fukuoka/Sapporo vacancy is attributed to KenDIX in places but to accessible Mitsui Fudosan evidence elsewhere.
 
 ## MINOR findings
 
-- The mortgage derivation prints `(1+r)^360 = 1.93044`; at 2.15% nominal with monthly compounding it is approximately **1.905**. The resulting payment is nevertheless close to correct.
-- Property tax is described as based on assessed value but calculated as a percentage of purchase price.
-- “20–30% down payments with lower LTV” is internally wrong: 20% down implies higher LTV than the modeled 30% down.
-- Fukuoka is called the “best yield profile” at 4.77% even though Sapporo is reported at 5.03%; the intended demographic qualification should be explicit.
-- No quantitative appreciation forecast is made, but qualitative catalyst effects are asserted without explicit transmission assumptions.
+- Fukuoka’s 4.77% yield is described as highest among positive-growth major cities, but Osaka is listed at **4.78%** with positive population growth.
+- “20–30% down payments with lower LTV” is internally inconsistent with the baseline 30% down/70% LTV; lower LTV generally requires more than 30% down.
+- HTTP 403 is handled correctly only for TOK-X-03 in the revised claims file, but the report still presents the 2.15% residential vacancy in its verified-data section.
 
 ## Required fixes
 
-1. Replace every stale CoC, DSCR, ADS, NOI and cap-rate figure in the report with one consistently recalculated version.
-2. Resolve the Tokyo ¥4,698/sqm rent definition and correct the multiplication; rerun the central conclusion afterward.
-3. Remove the ranking or clearly mark it non-decision-ready until all decision-driving prices, rents, vacancy rates, financing terms and expense assumptions are verified.
-4. Remove or relabel all Tokyo Bay/Koto, prefecture/city and Chitose/Sapporo substitutions.
-5. Correct Osaka City population using an exact municipal table.
-6. Match yield observations to property type, unit size, building age, geography, date and asking/transaction basis.
-7. Distinguish gross yield, effective gross income, NOI cap rate and cash-on-cash return consistently.
-8. Add an exact accessible URL, page/table and quotation for every material VERIFIED claim. For TOK-X-03, use an accessible municipal/MLIT housing survey or leave it PENDING and exclude it from decision-driving analysis.
-9. Publish the 25-point scoring formula and evidence for every risk score, or remove the scores.
-10. Reconcile `reports/`, `calculations/`, `claims/` and `verification/`; the external review’s “blockers resolved” assertion is currently contradicted by the main report.
+1. Regenerate the report from one authoritative calculation version; remove every superseded CoC, DSCR, ADS, NOI, and cap-rate figure.
+2. Correct the Tokyo rent multiplication and rerun the headline conclusion.
+3. Remove the ranking and 25-point scores until all decision-driving inputs are VERIFIED, or clearly label the entire output as non-decision-ready scenario analysis.
+4. Correct Osaka City population using city-specific evidence.
+5. Remove or segregate Tokyo Bay, prefecture-level, central-five-ward, Chitose, and other broader-geography observations from city/ward conclusions.
+6. Provide direct accessible URLs plus exact page/table/row or quoted passage for every material VERIFIED claim. Downgrade claims lacking such evidence.
+7. Match yield evidence to property type, existing/new status, unit size/bedroom count, geography, observation date, and asking-versus-transaction basis.
+8. Document the score formula and evidence for every qualitative factor, or delete the scores.
+9. Recalculate CoC using total cash invested and clarify whether taxes use assessed value or purchase price.
+10. Correct the displayed amortization exponent and preserve machine-reproducible calculation output.
 
 ## Questions requiring evidence
 
-- Does Savills’ ¥4,698/sqm figure apply to a 60 sqm 2LDK, and is it asking, achieved, gross or effective rent?
-- What exact transaction evidence supports each representative purchase price?
-- What accessible lender evidence supports 70% LTV and 2.15% fixed for foreign nationals?
-- What exact source supports Osaka City population of 8.76 million?
-- What residential vacancy evidence supports Osaka, Fukuoka, Sapporo and Koto?
-- What unit sizes and property types underlie each Global Property Guide yield?
-- What evidence supports the liquidity ranking and the “single-industry,” valuation and disaster-risk assessments?
-- Are management, reserve, tax and insurance assumptions based on purchase price, assessed value, fixed condominium charges or gross rent?
+- What exact Osaka City table supports population of 8.76 million and +0.9% growth?
+- What exact Savills sample does ¥4,698/sqm cover: all 23 wards, central wards, asking leases, or a specific residential portfolio/grade?
+- What are the unit-size and bedroom assumptions behind each Global Property Guide gross yield?
+- What accessible source proves Tokyo residential vacancy of exactly 2.15%? If none, use an accessible Statistics Bureau/Tokyo housing survey replacement or retain PENDING.
+- What transaction evidence supports each representative pre-owned 60 sqm purchase price and monthly rent?
+- What lender evidence supports 70% LTV, 2.15% fixed, and 30-year amortization for foreign nationals?
+- Where are the exact evidence files for municipal populations, REI supply/prices, land-price tables, Tenjin projects, Rapidus investment, and hazard elevation?
+- How were the 25-point scores calculated and weighted?
 
-## Eligible for APPROVED
-
-**No.** Unresolved blockers affect the central cash-flow conclusion and the published ranking.
+**APPROVED eligibility: NO — unresolved BLOCKER findings require FAIL.**
