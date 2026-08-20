@@ -31,27 +31,26 @@ For every material research run:
 1. Produce a DRAFT report and claim/evidence/calculation files.
 2. Commit and push the draft branch to GitHub.
 3. Create or update `verification/external-review.md` as a structured review queue.
-4. The external reviewer (ChatGPT or an equivalent independent reviewer service) reviews the draft from the GitHub branch and attempts to falsify it. The reviewer should actively look for:
-   - incorrect geography
-   - mismatched observation period
-   - wrong metric definition
-   - source-quality problems
-   - arithmetic errors
-   - unit errors
-   - gross-vs-net yield confusion
-   - asking-vs-transaction confusion
-   - Grade-A-vs-all-grade mismatch
-   - property-type/unit-size mismatch
-   - unsupported infrastructure catalysts
-   - unsupported forecasts
-   - omitted contradictory sources
-   - calculations that do not reproduce from stated inputs
-   - conclusions that are stronger than the evidence
+4. The external reviewer (ChatGPT or an equivalent independent reviewer service) reviews the draft from the GitHub branch and attempts to falsify it. The reviewer should actively look for incorrect geography, mismatched observation period, wrong metric definition, source-quality problems, arithmetic errors, unit errors, gross-vs-net yield confusion, asking-vs-transaction confusion, Grade-A-vs-all-grade mismatch, property-type/unit-size mismatch, unsupported infrastructure catalysts, unsupported forecasts, omitted contradictory sources, calculations that do not reproduce from stated inputs, and conclusions that are stronger than the evidence.
 5. Reviewer feedback must be written to GitHub, not left only in Telegram.
 6. Hermes must read the review, correct the research/calculations/report, and push a new commit.
 7. Repeat the review/fix cycle until no material blocking issue remains.
 8. Only then may the report move from `READY_FOR_REVIEW` to `APPROVED`.
 9. The final report must preserve the review history so improvements are auditable.
+
+## Stream/tool-call resilience
+Hermes may encounter provider stream stalls during tool calls. Treat these as execution failures, not as successful work.
+
+1. If a stream stalls during `execute_code`, `write_file`, `terminal`, browser, or another tool call, assume the affected action DID NOT execute unless independently verified.
+2. Do NOT blindly retry the identical long tool call from the same conversational state.
+3. First inspect Git status, the expected output path, and any relevant logs/state to determine whether the tool side effect happened.
+4. Break large tool calls into smaller deterministic operations. For long calculations, process by market/claim batch and persist intermediate results to GitHub/local files after each batch.
+5. For long file writes, write structured content in chunks rather than one giant tool call.
+6. If a calculation tool stalls, rerun a smaller calculation or use a simpler deterministic calculator/Python invocation. Record the failed attempt and the successful retry.
+7. If the session itself becomes wedged, start a new named session and resume from the latest Git commit/state rather than reconstructing work from Telegram history.
+8. Never report COMPLETE solely because the surrounding model response continued after a stalled tool call. Completion requires independently verified artifacts and a successful commit/push.
+9. After recovery, record `stream/tool_call_failure` in the run log with tool name, approximate stage, whether side effects were verified, and recovery action taken.
+10. If a required artifact cannot be independently verified after a stream stall, mark the related task PENDING and do not use it in ranking.
 
 ## Reviewer feedback schema
 Every external review should contain:
@@ -119,6 +118,7 @@ FAIL the claim/report quality gate if:
 - rental yields are compared across incompatible property types, unit sizes, datasets, or periods without normalization
 - required external review is missing for a report marked APPROVED
 - any unresolved BLOCKER finding remains open
+- a required tool action stalled and its artifact/output was not independently verified
 
 ## Required repository structure
 - `research/YYYY-MM-DD/` raw market research and notes
@@ -128,6 +128,7 @@ FAIL the claim/report quality gate if:
 - `verification/` `pending.md`, `verified.md`, `disputed.md`, `rejected.md`, `external-review.md`
 - `reports/` draft and final market reports
 - `prompts/` current agent instructions and task templates
+- `runlogs/` execution/recovery logs including tool stalls and retries
 
 ## Five target markets
 - Tokyo 23 wards
