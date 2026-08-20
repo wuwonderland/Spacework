@@ -1,0 +1,75 @@
+name: Japan Real Estate Agent — automatic review loop
+
+on:
+  push:
+    branches:
+      - 'agent/research-*'
+      - 'audit/*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  REVIEWER_MODEL: gpt-5.6-sol
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  review:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deterministic quality gate
+        run: |
+          set +e
+          python3 scripts/verification_gate.py > gate-result.md 2>&1
+          cat gate-result.md
+          test -f gate-result.md
+
+      - name: AI adversarial review
+        if: env.OPENAI_API_KEY != ''
+        run: python3 scripts/ai_review.py
+
+      - name: Fallback review state
+        if: env.OPENAI_API_KEY == ''
+        run: |
+          mkdir -p verification
+          cat > verification/automatic-review.md <<'EOF'
+          # Automatic External Review
+
+          Status: BLOCKED — `OPENAI_API_KEY` is not configured in GitHub Actions.
+
+          Deterministic verification was executed. Configure the repository secret `OPENAI_API_KEY` to enable the independent AI reviewer.
+          EOF
+
+      - name: Commit review artifacts
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add gate-result.md verification/automatic-review.md
+          if git diff --cached --quiet; then
+            echo 'No review artifact changes to commit.'
+          else
+            git commit -m '[auto-review] verify research commit'
+            git push
+          fi
+
+      - name: Telegram notification
+        if: env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != ''
+        run: python3 scripts/telegram_notify.py
+
+      - name: Print configuration gap
+        if: env.OPENAI_API_KEY == '' || env.TELEGRAM_BOT_TOKEN == '' || env.TELEGRAM_CHAT_ID == ''
+        run: |
+          echo 'Automation is partially configured.'
+          echo 'OPENAI_API_KEY set:' ${{ secrets.OPENAI_API_KEY != '' }}
+          echo 'TELEGRAM_BOT_TOKEN set:' ${{ secrets.TELEGRAM_BOT_TOKEN != '' }}
+          echo 'TELEGRAM_CHAT_ID set:' ${{ secrets.TELEGRAM_CHAT_ID != '' }}
