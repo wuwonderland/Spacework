@@ -1,9 +1,9 @@
 # External Review — Five-Market Audit (2026-08-21)
 
 **Reviewed branch:** `audit/2026-08-21-five-market-calculations`  
-**Reviewed commit:** 6869cd8  
+**Reviewed commit:** 6869cd8 (initial) → 50d4d61 (revision 2)  
 **Reviewer:** ChatGPT  
-**Status:** FAIL → REVISION IN PROGRESS (Revision 2)  
+**Status:** FAIL → REVISION COMPLETE (Revision 2 at commit 50d4d61) — Ready for next external review  
 
 ---
 
