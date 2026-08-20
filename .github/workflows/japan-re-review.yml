@@ -11,7 +11,8 @@ permissions:
   contents: write
 
 env:
-  REVIEWER_MODEL: gpt-5.6-sol
+  REVIEWER_MODEL: gpt-5.6-luna
+  ESCALATION_MODEL: gpt-5.6-sol
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -20,7 +21,7 @@ jobs:
   review:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,6 +52,7 @@ jobs:
           EOF
 
       - name: Commit review artifacts
+        if: always()
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -59,15 +61,15 @@ jobs:
             echo 'No review artifact changes to commit.'
           else
             git commit -m '[auto-review] verify research commit'
-            git push
+            git push || echo 'Review artifact push failed; retaining job result for notification.'
           fi
 
       - name: Telegram notification
-        if: env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != ''
-        run: python3 scripts/telegram_notify.py
+        if: always() && env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != ''
+        run: python3 scripts/telegram_notify.py || echo 'Telegram notification failed.'
 
       - name: Print configuration gap
-        if: env.OPENAI_API_KEY == '' || env.TELEGRAM_BOT_TOKEN == '' || env.TELEGRAM_CHAT_ID == ''
+        if: always() && (env.OPENAI_API_KEY == '' || env.TELEGRAM_BOT_TOKEN == '' || env.TELEGRAM_CHAT_ID == '')
         run: |
           echo 'Automation is partially configured.'
           echo 'OPENAI_API_KEY set:' ${{ secrets.OPENAI_API_KEY != '' }}
