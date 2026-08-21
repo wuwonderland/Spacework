@@ -48,8 +48,8 @@ INPUTS = {
     "Tokyo 23 Wards": {
         "property_size_sqm": 60,
         "purchase_price": 66_000_000,  # PENDING: est. from YEN 1,100,000/sqm, no source
-        "monthly_rent": 220_000,      # PENDING: derived from Savills (403), math error in derivation
-        "vacancy_rate": 0.022,        # DISPUTED: VERIFIED claim says 2.15%, report uses 2.2%
+        "monthly_rent": 281_880,      # CORRECTED: ¥4,698/sqm/mo (Savills Q1 2026) × 60 sqm = ¥281,880 (was ¥220,000 — arithmetic error)
+        "vacancy_rate": 0.022,        # DISPUTED: Report states 2.15% (TOK-X-03, PENDING — no accessible source). Using 2.2% as estimate. Impact: ¥72,593 vs ¥56,960 vacancy loss.
         "mgmt_fee_pct": 0.15,         # INDUSTRY STANDARD (not market-specific)
         "maint_pct": 0.08,            # INDUSTRY STANDARD (not market-specific)
         "prop_tax_rate": 0.0040,      # OK (Tokyo standard)

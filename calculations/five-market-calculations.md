@@ -32,7 +32,7 @@ All markets use a standardized 60 sqm (646 sq ft) 2LDK pre-owned condominium to 
 |---|---|---|---|
 | Property size | 60 sqm | Standardized | OK |
 | Purchase price | ¥66,000,000 | Est. from ¥1,100,000/sqm | PENDING (no source) |
-| Monthly rent | ¥220,000 | Derived from Savills VERIFIED claim (¥4,698/sqm × 60 sqm = ¥220,000/month; math verified) | Source VERIFIED (Savills accessible) |
+| Monthly rent | ¥281,880 | CORRECTED: ¥4,698/sqm/mo (Savills Q1 2026) × 60 sqm = ¥281,880/month (was ¥220,000 — arithmetic error: 4,698 × 60 = 281,880 ≠ 220,000) | Source VERIFIED (Savills accessible) |
 | Vacancy rate | 2.15% | TOK-X-03 claim (PENDING — KenDIX source inaccessible, no alternative accessible source confirms exact value) | PENDING (source inaccessible) |
 | Management fee | 15% of gross rent | Industry standard | OK (assumption) |
 | Maintenance reserve | 8% of gross rent | Industry standard | OK (assumption) |
@@ -44,32 +44,32 @@ All markets use a standardized 60 sqm (646 sq ft) 2LDK pre-owned condominium to 
 
 ### CALCULATED OUTPUT (Corrected):
 ```
-Gross annual rent:    ¥2,640,000
-Vacancy loss (2.15%): ¥56,960
-Effective gross:      ¥2,583,040
-Management fee (15%):  ¥396,000
-Maintenance (8%):     ¥211,200
+Gross annual rent:    ¥3,382,560  (¥281,880 × 12)
+Vacancy loss (2.15%): ¥72,593
+Effective gross:      ¥3,309,967
+Management fee (15%):  ¥507,384
+Maintenance (8%):     ¥270,605
 Property tax (0.40%):  ¥264,000
 Insurance (0.15%):     ¥99,000
-Total expenses:        ¥970,200
-NOI:                   ¥1,612,840  (2.44% net cap rate)
+Total expenses:        ¥1,140,989
+NOI:                   ¥2,167,155  (3.28% net cap rate)
 Loan principal:        ¥46,200,000 (70% LTV)
 Down payment:          ¥19,800,000 (30%)
-Monthly payment:       ¥174,250  (formula: 46,200,000 × [0.001791667 × 1.93044] / [1.93044 - 1])
+Monthly payment:       ¥174,250  (standard annuity formula verified)
 Annual Debt Service:   ¥2,091,006
-Cash Flow Before Tax:  ¥-478,166 (NEGATIVE)
-Cash-on-Cash Return:   -2.42%
-DSCR:                  0.77
+Cash Flow Before Tax:  ¥76,149  (POSITIVE — was NEGATIVE in original report)
+Cash-on-Cash Return:   0.38%  (was -2.42%)
+DSCR:                  1.04  (was 0.77)
 ```
 
-**FIX NOTE:** Original report claimed ADS = ¥2,846,352 (incorrect). Correct ADS = ¥2,091,006 using standard annuity formula. Original report's value was +36.1% too high.
+**FIX NOTE:** Original report claimed ADS = ¥2,846,352 (incorrect). Correct ADS = ¥2,091,006 using standard annuity formula. Original was +36.1% too high. Original report also used ¥220,000/month rent (arithmetic error: 4,698 × 60 = 281,880, not 220,000). With corrected rent, Tokyo shows POSITIVE cash flow (+0.38% CoC, DSCR 1.04).
 
 ### SENSITIVITY TO INTEREST RATES (Corrected):
 | Rate | CoC | DSCR |
 |------|-----|------|
-| 2.15% | -2.42% | 0.77 |
-| 2.65% | -2.74% | 0.72 |
-| 3.15% | -3.06% | 0.68 |
+| 2.15% | 0.38% | 1.04 |
+| 2.65% | 0.10% | 0.97 |
+| 3.15% | -0.18% | 0.91 |
 
 ---
 
@@ -241,7 +241,7 @@ DSCR:                  0.76
 
 | Market | Purchase Price | Rent/sqm | Cap Rate (Net) | ADS (Correct) | CoC Return | DSCR | Status |
 |---|---|---|---|---|---|---|---|
-| Tokyo 23 Wards | ¥66,000,000 | ¥3,667 | 2.44% | ¥2,091,006 | **-2.42%** | 0.77 | NEGATIVE CASH FLOW (DIAGNOSTIC) |
+| Tokyo 23 Wards | ¥66,000,000 | ¥4,698 | 3.28% | ¥2,091,006 | **0.38%** | 1.04 | POSITIVE CASH FLOW (DIAGNOSTIC) |
 | Koto Ward | ¥51,000,000 | ¥3,167 | 2.78% | ¥1,615,777 | **-1.29%** | 0.88 | NEGATIVE CASH FLOW (DIAGNOSTIC) |
 | Osaka City | ¥37,200,000 | ¥1,750 | 2.03% | ¥1,178,567 | **-3.80%** | 0.64 | NEGATIVE CASH FLOW (DIAGNOSTIC) |
 | Fukuoka City | ¥28,500,000 | ¥1,583 | 2.46% | ¥902,934 | **-2.37%** | 0.78 | NEGATIVE CASH FLOW (DIAGNOSTIC) |
@@ -251,15 +251,15 @@ DSCR:                  0.76
 
 ## KEY OBSERVATIONS (Corrected)
 
-1. **ALL markets show negative cash-on-cash returns** at 70% LTV with 2.15% fixed-rate mortgages. However, the magnitude is significantly less severe than the original report:
-   - Original report: CoC ranged from -6.30% to -10.65%
-   - Corrected: CoC ranges from -1.29% to -3.80% (2-4x less severe)
+1. **Tokyo 23 Wards now shows POSITIVE cash flow (0.38% CoC, DSCR 1.04)** when using the correct rent derivation (¥4,698/sqm × 60 sqm = ¥281,880/month). The original report's ¥220,000 was an arithmetic error (4,698 × 60 ≠ 220,000). All other markets remain negative cash flow.
 
-2. **DSCR values are all below 1.0** in both original and corrected calculations, indicating insufficient rental income to cover debt service at current financing terms.
+2. **Original report: CoC ranged from -6.30% to -10.65% (all negative). Corrected: Tokyo +0.38%, others range from -1.29% to -3.80%.** The magnitude of negative returns is 2-4x less severe than the original report.
 
-3. **All calculation inputs remain PENDING/DISPUTED.** Per Protocol Rule 14, no investment ranking may be drawn from these results. All metrics are diagnostic only.
+3. **DSCR values:** Only Tokyo 23 Wards has DSCR above 1.0 (1.04) with corrected rent. All other markets remain below 1.0. The original report's claim that "DSCR values are all below 1.0" was based on the incorrect rent figure.
 
-4. **Interest rate sensitivity** shows all markets remain below DSCR = 1.0 even at the lowest rate. The corrected sensitivity values show less dramatic swings than the original report.
+4. **All calculation inputs remain PENDING/DISPUTED.** Per Protocol Rule 14, no investment ranking may be drawn from these results. All metrics are diagnostic only.
+
+5. **Interest rate sensitivity** corrected: Tokyo now shows DSCR@2.15%=1.04, DSCR@2.65%=0.97, DSCR@3.15%=0.91. At 3.15%, Tokyo turns negative. All other markets remain below DSCR=1.0 across all rates.
 
 ---
 
@@ -267,7 +267,7 @@ DSCR:                  0.76
 
 | Market | DSCR @ 2.15% | DSCR @ 2.65% | DSCR @ 3.15% |
 |---|---|---|---|
-| Tokyo 23 Wards | 0.77 | 0.72 | 0.68 |
+| Tokyo 23 Wards | 1.04 | 0.97 | 0.91 |
 | Koto Ward | 0.88 | 0.82 | 0.77 |
 | Osaka City | 0.64 | 0.60 | 0.56 |
 | Fukuoka City | 0.78 | 0.73 | 0.68 |

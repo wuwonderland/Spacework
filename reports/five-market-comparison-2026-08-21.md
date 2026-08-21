@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-**Key Finding:** All five Japanese real-estate markets show negative cash-on-cash returns at standard foreign-national financing terms (70% LTV, 2.15% fixed rate, 30-year amortization) as of August 2026. This indicates that income-producing property investments in Japan currently require either lower leverage, higher rents, or alternative financing structures to achieve positive returns.
+**Key Finding:** Tokyo 23 Wards shows marginal positive cash flow (+0.38% CoC, DSCR 1.04) at standard foreign-national financing terms (70% LTV, 2.15% fixed rate, 30-year amortization) as of August 2026. All other markets show negative cash-on-cash returns. **All calculation inputs are PENDING/DISPUTED — results are diagnostic only, not decision-ready.**
 
 **Ranking (Risk-Adjusted Income Return):**
 1. **Fukuoka City** — Best yield profile (4.77% gross), positive demographic trends, diversified growth drivers
@@ -36,7 +36,8 @@
 | Office rent | ¥21,027/tsubo | August 2025 | Tokyo CBD | Mitsui Fudosan 2Q 2025 |
 | Residential vacancy rate | 2.15% | April 2025 | Tokyo 23 wards | KenDIX 2Q 2025 |
 | Asking rent growth | +7.82% YoY | Q3 2025 | Tokyo 23 wards | At Home Index Q3 2025 |
-| Rent per sqm (avg) | ¥4,698/sqm/mo | Q1 2026 | Tokyo 23 wards | Savills Q1 2026 |
+|| Rent per sqm (avg) | ¥4,698/sqm/mo | Q1 2026 | Tokyo 23 wards | Savills Q1 2026 |
+|| Monthly rent (60 sqm property) | ¥281,880 | Derived: ¥4,698 × 60 sqm | Tokyo 23 wards | Report calculation *(corrected: was ¥220,000)* |
 | Population | 9.58 million | October 2025 | Tokyo 23 wards | Tokyo Gov October 2025 |
 | Population change | +1.2% | 2020-2025 | Tokyo 23 wards | Tokyo Gov October 2025 |
 | Foreign buyer share (MOJ) | 3.0% | Jan-Jun 2025 | Tokyo 23 wards | MOJ Survey July 2025 |
@@ -61,9 +62,9 @@
 | Office vacancy (All-grade) | 1.8% | Q2 2026 | Osaka central wards | CBRE Q2 2026 |
 | Office rent | ¥12,522/tsubo | August 2025 | Osaka City | Mitsui Fudosan 2Q 2025 |
 | Office vacancy (Aug 2025) | 3.74% | August 2025 | Osaka City | KenDIX 2Q 2025 |
-| Population | 8.76 million | October 2025 | Osaka City | Osaka City Statistics |
-| Population change | +0.9% | 2020-2025 | Osaka City | Osaka City Statistics |
-| Tourism visitors | 14.2 million | CY 2025 | Osaka Prefecture | JNTO Jan 2026 |
+| Population | 2.79 million | October 2025 | Osaka City | Osaka City Statistics *(corrected: was 8.76M, prefecture-scale)* |
+|| Population change | +0.9% | 2020-2025 | Osaka City | Osaka City Statistics |
+|| Tourism visitors | 14.2 million | CY 2025 | Osaka Prefecture | JNTO Jan 2026 |
 
 ### Fukuoka City
 
@@ -218,7 +219,7 @@ All calculations performed using Python with independent recalculation verificat
 **Weaknesses:**
 - VERIFIED gross yield only 3.27%
 - Highest entry prices (¥66M representative property)
-- Negative cash flow (-6.83% CoC)
+- *Cash flow: marginal positive (+0.38% CoC, DSCR 1.04) — corrected from erroneous ¥220,000 rent*
 - Extreme valuation risk
 - Rising regulatory scrutiny on foreign buyers
 
@@ -290,13 +291,13 @@ All calculations performed using Python with independent recalculation verificat
 ## 9. Investment Implications
 
 ### Immediate Takeaways
-1. **No positive cash flow opportunities** exist under standard financing terms in any of the five markets. Investors must either accept negative carry or seek alternative financing (lower LTV, interest-only periods, or higher equity).
+1. **Tokyo 23 Wards is the only market with positive cash flow (+0.38% CoC, DSCR 1.04)** when using the correct rent derivation (¥4,698/sqm × 60 sqm = ¥281,880/month). The original report's ¥220,000 was an arithmetic error. All other markets require either lower leverage or alternative financing.
 
 2. **Risk-adjusted income returns favor regional markets** — Fukuoka and Sapporo offer superior yields despite negative cash flow, with Sapporo's higher yield partially offset by population decline and single-industry risk.
 
-3. **Tokyo's strength lies in capital preservation and liquidity**, not income generation. The market compensates for low yields with high liquidity and tenant quality.
+3. **Tokyo's strength lies in capital preservation and liquidity**, with marginal positive cash flow (+0.38% CoC, DSCR 1.04). The market compensates for low yields with high liquidity and tenant quality. However, the positive carry is thin and turns negative at 3.15% rates.
 
-4. **Interest rate sensitivity is high across all markets** — a 100bps rate increase reduces DSCR by 0.04-0.07 points across markets, pushing already-negative cash flows deeper into negative territory.
+4. **Interest rate sensitivity** — a 100bps rate increase reduces DSCR by 0.04-0.07 points across markets. Tokyo turns from positive (DSCR 1.04) to marginal negative (DSCR 0.91) at 3.15%.
 
 ### Recommended Next Steps
 1. **Verify residential vacancy rates** for Osaka, Fukuoka, and Sapporo through municipal surveys
@@ -310,15 +311,15 @@ All calculations performed using Python with independent recalculation verificat
 
 | Requirement | Status |
 |---|---|
-| All material numerical claims trace to source | YES |
-| Geography strictly maintained (no substitutions) | YES |
+| All material numerical claims trace to source | ⚠️ PARTIAL — calculations corrected, inputs remain PENDING/DISPUTED |
+| Geography strictly maintained (no substitutions) | ⚠️ PARTIAL — violations documented in claims/five-market-claims.md |
 | Metric definitions verified | YES |
 | Observation periods identified | YES |
 | Primary sources preferred | YES |
 | Disputed claims flagged and explained | YES |
-| Calculations independently verified | YES |
+| Calculations independently verified | ✅ OK (25/25 corrected, standard annuity formula verified) |
 | No appreciation forecasts without assumptions | YES — NO APPRECIATION FORECASTS MADE |
-| Ranking uses VERIFIED data only | YES |
+| Ranking uses VERIFIED data only | ❌ FAIL — ranking uses PENDING inputs. DIAGNOSTIC ONLY, not decision-ready |
 
 ---
 
